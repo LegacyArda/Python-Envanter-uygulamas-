@@ -1,29 +1,20 @@
 import mysql.connector
-from datetime import datetime # Tarih formatlama için
+from datetime import datetime 
 
-# ==========================================================================
-# ⚙️ BAĞLANTI VE TEMEL AYARLAR
-# ==========================================================================
 
-# NOT: Bu bilgileri kendi veritabanı kurulumunuza göre DÜZENLEYİN.
+
+
 DB_HOST = "127.0.0.1"
 DB_USER = "legacy"
-DB_PASSWORD = "ardaarda4141" # KENDİ ŞİFRENİZİ BURAYA GİRİN!
+DB_PASSWORD = "ardaarda4141" 
 DB_NAME = "envanter_db"
 TABLO_ADI = "urunler"
 
-# ==========================================================================
-# 🛠️ GENEL FONKSİYONLAR
-# ==========================================================================
 
 def get_db_connection(use_db=True):
-    """
-    MySQL sunucusuna veya belirtilen veritabanına bağlanır.
-    use_db=False ise, henüz oluşturulmamış veritabanı ismini kullanmadan sunucuya bağlanır.
-    """
     try:
         if use_db:
-            # Belirtilen veritabanına bağlan
+        
             cnn = mysql.connector.connect(
                 host=DB_HOST,
                 user=DB_USER,
@@ -31,7 +22,6 @@ def get_db_connection(use_db=True):
                 database=DB_NAME
             )
         else:
-            # Sadece MySQL sunucusuna bağlan (Veritabanı oluşturmak için)
             cnn = mysql.connector.connect(
                 host=DB_HOST,
                 user=DB_USER,
@@ -43,7 +33,6 @@ def get_db_connection(use_db=True):
         return None
 
 def veritabani_ve_tablo_olustur():
-    """İlk çalıştırmada veritabanını ve tabloyu oluşturur."""
     cnn = get_db_connection(use_db=False)
     if cnn is None:
         return
@@ -51,14 +40,11 @@ def veritabani_ve_tablo_olustur():
     cursor = cnn.cursor()
 
     try:
-        # 1. Veritabanını oluşturma (Eğer mevcut değilse)
         cursor.execute(f"CREATE DATABASE IF NOT EXISTS {DB_NAME}")
         print(f"✅ '{DB_NAME}' veritabanı kontrol edildi/oluşturuldu.")
 
-        # 2. Bağlantıyı yeni veritabanına çevir
-        cnn.database = DB_NAME
+        cursor.database = DB_NAME
 
-        # 3. Tablo oluşturma
         tablo_olusturma_sorgusu = f"""
         CREATE TABLE IF NOT EXISTS {TABLO_ADI} (
             id INT AUTO_INCREMENT PRIMARY KEY,
@@ -85,7 +71,6 @@ def veritabani_ve_tablo_olustur():
 # ==========================================================================
 
 def urun_ekle(urun_adi, aciklama, stok_miktari, fiyat):
-    """Yeni bir ürün kaydını tabloya ekler."""
     cnn = get_db_connection()
     if cnn is None:
         return
@@ -112,7 +97,6 @@ def urun_ekle(urun_adi, aciklama, stok_miktari, fiyat):
 # ==========================================================================
 
 def urunleri_listele():
-    """Tüm ürün kayıtlarını tablodan okur."""
     cnn = get_db_connection()
     if cnn is None:
         return [], []
@@ -123,7 +107,7 @@ def urunleri_listele():
     try:
         cursor.execute(sorgu)
         sonuclar = cursor.fetchall()
-        # Sütun isimlerini al
+        
         sutun_isimleri = [i[0] for i in cursor.description]
         return sutun_isimleri, sonuclar
 
@@ -136,25 +120,24 @@ def urunleri_listele():
         cnn.close()
 
 def envanteri_goster():
-    """Ürün listeleme fonksiyonunu çalıştırır ve sonuçları formatlı gösterir."""
     basliklar, urun_listesi = urunleri_listele()
 
     print("\n" + "="*70)
-    print("                      📊 MEVCUT ENVANTER LİSTESİ 📊")
+    print("                      📊 MEVCUT ENVANTER LİSTESİ 📊")
     print("="*70)
 
     if not urun_listesi:
         print("Envanterde kayıtlı ürün bulunmamaktadır.")
         return
 
-    # Başlıkları formatlı yazdır
+    
     print(f"| {'ID':<3} | {'Ürün Adı':<25} | {'Stok':<10} | {'Fiyat':<8} | {'Eklenme Tarihi':<19} |")
     print("-" * 70)
 
-    # Ürünleri formatlı yazdır
+    
     for urun in urun_listesi:
         fiyat_str = f"{urun[3]:.2f}"
-        # Tarih formatını temizleyerek yazdır
+        
         tarih_str = urun[4].strftime("%Y-%m-%d %H:%M:%S")
 
         print(f"| {urun[0]:<3} | {urun[1]:<25} | {urun[2]:<10} | {fiyat_str:<8} | {tarih_str:<19} |")
@@ -166,7 +149,6 @@ def envanteri_goster():
 # ==========================================================================
 
 def urun_guncelle(urun_id, yeni_stok, yeni_fiyat=None, yeni_aciklama=None):
-    """Belirtilen ID'ye sahip ürünün bilgilerini günceller."""
     cnn = get_db_connection()
     if cnn is None:
         return
@@ -209,7 +191,6 @@ def urun_guncelle(urun_id, yeni_stok, yeni_fiyat=None, yeni_aciklama=None):
 # ==========================================================================
 
 def urun_sil(urun_id):
-    """Belirtilen ID'ye sahip ürünü veritabanından siler."""
     cnn = get_db_connection()
     if cnn is None:
         return
@@ -240,13 +221,12 @@ def urun_sil(urun_id):
 # ==========================================================================
 
 def main():
-    """Uygulamanın ana menüsü."""
-    # Uygulama başladığında veritabanı ve tabloyu hazırla
+    
     veritabani_ve_tablo_olustur()
 
     while True:
         print("\n" + "="*35)
-        print("       🛒 ENVANTER YÖNETİMİ (CRUD)")
+        print("       🛒 ENVANTER YÖNETİMİ (CRUD)")
         print("="*35)
         print("1. Ürün Ekle (Create) ➕")
         print("2. Ürünleri Listele (Read) 🔎")
@@ -274,7 +254,7 @@ def main():
         elif secim == '3':
             print("\n--- Ürün Güncelle ---")
             try:
-                envanteri_goster() # Güncellemeden önce mevcut listeyi göster
+                envanteri_goster() 
                 urun_id = int(input("Güncellenecek Ürün ID'si: "))
                 yeni_stok = int(input("Yeni Stok Miktarı: "))
                 yeni_fiyat_input = input("Yeni Fiyat (Boş bırakmak için Enter): ")
@@ -286,7 +266,7 @@ def main():
         elif secim == '4':
             print("\n--- Ürün Sil ---")
             try:
-                envanteri_goster() # Silmeden önce mevcut listeyi göster
+                envanteri_goster() 
                 urun_id = int(input("Silinecek Ürün ID'si: "))
                 urun_sil(urun_id)
             except ValueError:
