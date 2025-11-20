@@ -1,12 +1,9 @@
 import mysql.connector
 from datetime import datetime 
 
-
-
-
 DB_HOST = "127.0.0.1"
 DB_USER = "legacy"
-DB_PASSWORD = "ardaarda4141" 
+DB_PASSWORD = "ardaarda4141"
 DB_NAME = "envanter_db"
 TABLO_ADI = "urunler"
 
@@ -14,7 +11,6 @@ TABLO_ADI = "urunler"
 def get_db_connection(use_db=True):
     try:
         if use_db:
-        
             cnn = mysql.connector.connect(
                 host=DB_HOST,
                 user=DB_USER,
@@ -43,7 +39,7 @@ def veritabani_ve_tablo_olustur():
         cursor.execute(f"CREATE DATABASE IF NOT EXISTS {DB_NAME}")
         print(f"✅ '{DB_NAME}' veritabanı kontrol edildi/oluşturuldu.")
 
-        cursor.database = DB_NAME
+        cnn.database = DB_NAME 
 
         tablo_olusturma_sorgusu = f"""
         CREATE TABLE IF NOT EXISTS {TABLO_ADI} (
@@ -66,10 +62,6 @@ def veritabani_ve_tablo_olustur():
         cursor.close()
         cnn.close()
 
-# ==========================================================================
-# ➕ CREATE (EKLEME)
-# ==========================================================================
-
 def urun_ekle(urun_adi, aciklama, stok_miktari, fiyat):
     cnn = get_db_connection()
     if cnn is None:
@@ -91,10 +83,6 @@ def urun_ekle(urun_adi, aciklama, stok_miktari, fiyat):
     finally:
         cursor.close()
         cnn.close()
-
-# ==========================================================================
-# 🔎 READ (LİSTELEME)
-# ==========================================================================
 
 def urunleri_listele():
     cnn = get_db_connection()
@@ -144,10 +132,6 @@ def envanteri_goster():
 
     print("="*70 + "\n")
 
-# ==========================================================================
-# ✏️ UPDATE (GÜNCELLEME)
-# ==========================================================================
-
 def urun_guncelle(urun_id, yeni_stok, yeni_fiyat=None, yeni_aciklama=None):
     cnn = get_db_connection()
     if cnn is None:
@@ -186,10 +170,6 @@ def urun_guncelle(urun_id, yeni_stok, yeni_fiyat=None, yeni_aciklama=None):
         cursor.close()
         cnn.close()
 
-# ==========================================================================
-# 🗑️ DELETE (SİLME)
-# ==========================================================================
-
 def urun_sil(urun_id):
     cnn = get_db_connection()
     if cnn is None:
@@ -216,17 +196,13 @@ def urun_sil(urun_id):
         cursor.close()
         cnn.close()
 
-# ==========================================================================
-# 🚀 ANA UYGULAMA MENÜSÜ
-# ==========================================================================
-
 def main():
     
     veritabani_ve_tablo_olustur()
 
     while True:
         print("\n" + "="*35)
-        print("       🛒 ENVANTER YÖNETİMİ (CRUD)")
+        print("     🛒 ENVANTER YÖNETİMİ (CRUD)")
         print("="*35)
         print("1. Ürün Ekle (Create) ➕")
         print("2. Ürünleri Listele (Read) 🔎")
