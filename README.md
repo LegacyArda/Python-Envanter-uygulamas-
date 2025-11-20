@@ -1,4 +1,4 @@
-# Python-Envanter-uygulamas-
+# Python-Envanter-uygulaması-
 Uygulamayı kullanmak veya çalıştırmak için gerekli kütüpnaleri,Python ve SQL Server'ı kurmalısınız.SQL Server kodları aşağıda belirtilmiştir.Koddaki SQL Bilgileri bana aittir kendi bilgilerinizi girmeniz gereklidir.
 
 
